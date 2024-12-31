@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SWII6P2.Models;
 using SWII6P2.Services;
+using SWII6P2Verifications;
 
 namespace SWII6P2.Controllers
 {
@@ -81,6 +82,14 @@ namespace SWII6P2.Controllers
                 return BadRequest(new
                 {
                     Message = "O usuário não pode retornar vazio."
+                });
+            }
+
+            if (SWII6P2Verifications.Verifications.IsUserFull(user.Name, user.Password))
+            {
+                return BadRequest(new
+                {
+                    Message = "Erro, o usuário não está devidamente completo."
                 });
             }
 

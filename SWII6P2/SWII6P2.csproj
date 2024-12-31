@@ -12,4 +12,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="SWII6P2Verifications">
+      <HintPath>..\..\SWII6P2Verifications\SWII6P2Verifications\bin\Debug\net8.0\SWII6P2Verifications.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

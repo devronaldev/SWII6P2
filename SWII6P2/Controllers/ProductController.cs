@@ -84,7 +84,15 @@ namespace SWII6P2.Controllers
                     Message = "O novo produto não pode ser nulo."
                 });
             }
-            // Adicionar verificador de nulidade
+
+            if (SWII6P2Verifications.Verifications.IsProductFull(product.Name, product.Price))
+            {
+                return BadRequest(new
+                {
+                    Message = "O produto não está devidamente preenchido."
+                });
+            }
+
             try 
             {
                 var productToChange = await _context.Products.FirstOrDefaultAsync(p => p.Id == product.Id);
