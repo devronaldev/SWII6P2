@@ -21,14 +21,14 @@ namespace SWII6P2.Controllers
             {
                 return BadRequest(new
                 {
-                    Message = "Houve um problema com o Token."
+                    message = "Houve um problema com o Token."
                 });
             }
             if (product == null)
             {
                 return BadRequest(new
                 {
-                    Message = "O produto não pode estar vazio."
+                    message = "O produto não pode estar vazio."
                 });
             }
 
@@ -40,7 +40,7 @@ namespace SWII6P2.Controllers
                 {
                     return Unauthorized(new
                     {
-                        Message = "Nenhum usuário válido."
+                        message = "Nenhum usuário válido."
                     });
                 }
                 product.LastUpdaterId = user.Id;
@@ -50,12 +50,12 @@ namespace SWII6P2.Controllers
 
                 return Ok(new
                 {
-                    Message = "Produto cadastrado com sucesso."
+                    message = "Produto cadastrado com sucesso."
                 });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Message = $"Erro inesperado. Detalhes: {ex.Message}" });
+                return StatusCode(500, new { message = $"Erro inesperado. Detalhes: {ex.Message}" });
             }
         }
 
@@ -66,7 +66,7 @@ namespace SWII6P2.Controllers
             {
                 return BadRequest(new
                 {
-                    Message = "Erro, o Id não pode ser vazio."
+                    message = "Erro, o Id não pode ser vazio."
                 });
             }
             try
@@ -76,14 +76,14 @@ namespace SWII6P2.Controllers
                 {
                     return NotFound(new
                     {
-                        Message = "Erro, o produto não foi encontrado."
+                        message = "Erro, o produto não foi encontrado."
                     });
                 }
                 return Ok(product);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Message = $"Erro inesperado. Detalhes: {ex.Message}" });
+                return StatusCode(500, new { message = $"Erro inesperado. Detalhes: {ex.Message}" });
             }
         }
 
@@ -100,7 +100,7 @@ namespace SWII6P2.Controllers
             {
                 return BadRequest(new
                 {
-                    Message = "O novo produto não pode ser nulo."
+                    message = "O novo produto não pode ser nulo."
                 });
             }
 
@@ -108,7 +108,7 @@ namespace SWII6P2.Controllers
             {
                 return BadRequest(new
                 {
-                    Message = "O token não pode estar vazio."
+                    message = "O token não pode estar vazio."
                 });
             }
 
@@ -116,7 +116,7 @@ namespace SWII6P2.Controllers
             {
                 return BadRequest(new
                 {
-                    Message = "O produto não está devidamente preenchido."
+                    message = "O produto não está devidamente preenchido."
                 });
             }
 
@@ -128,7 +128,7 @@ namespace SWII6P2.Controllers
                 {
                     return Unauthorized(new
                     {
-                        Message = "Nenhum usuário válido."
+                        message = "Nenhum usuário válido."
                     });
                 }
 
@@ -137,7 +137,7 @@ namespace SWII6P2.Controllers
                 {
                     return NotFound(new
                     {
-                        Message = "Produto não encontrado."
+                        message = "Produto não encontrado."
                     });
                 }
 
@@ -150,12 +150,12 @@ namespace SWII6P2.Controllers
 
                 return Ok(new
                 {
-                    Message = "Produto atualizado com sucesso."
+                    message = "Produto atualizado com sucesso."
                 });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Message = $"Erro inesperado. Detalhes: {ex.Message}" });
+                return StatusCode(500, new { message = $"Erro inesperado. Detalhes: {ex.Message}" });
             }
         }
 
@@ -166,7 +166,7 @@ namespace SWII6P2.Controllers
             {
                 return BadRequest(new
                 {
-                    Message = "Erro, o id do produto não pode ser zero."
+                    message = "Erro, o id do produto não pode ser zero."
                 });
             }
 
@@ -178,7 +178,7 @@ namespace SWII6P2.Controllers
                 {
                     return Unauthorized(new
                     {
-                        Message = "Nenhum usuário válido."
+                        message = "Nenhum usuário válido."
                     });
                 }
 
@@ -187,7 +187,7 @@ namespace SWII6P2.Controllers
                 {
                     return NotFound(new
                     {
-                        Message = "O produto não foi encontrado."
+                        message = "O produto não foi encontrado."
                     });
                 }
                 _context.Products.Remove(product);
@@ -195,12 +195,12 @@ namespace SWII6P2.Controllers
 
                 return Ok(new
                 {
-                    Message = "O produto foi devidamente excluído."
+                    message = "O produto foi devidamente excluído."
                 });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Message = $"Um erro inesperado ocorreu. Confira o erro: {ex.Message}" });
+                return StatusCode(500, new { message = $"Um erro inesperado ocorreu. Confira o erro: {ex.Message}" });
             }            
         }
     }

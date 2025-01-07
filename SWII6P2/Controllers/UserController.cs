@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SWII6P2.Models;
@@ -21,7 +22,7 @@ namespace SWII6P2.Controllers
             {
                 return BadRequest(new
                 {
-                    Message = "O usuário não pode ser nulo"
+                    message = "O usuário não pode ser nulo"
                 });
             }
 
@@ -32,12 +33,12 @@ namespace SWII6P2.Controllers
 
                 return Ok(new
                 {
-                    Message = "Usuário criado com sucesso."
+                    message = "Usuário criado com sucesso."
                 });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Message = $"Erro inesperado. Detalhes: {ex.Message}" });
+                return StatusCode(500, new { message = $"Erro inesperado. Detalhes: {ex.Message}" });
             }
         }
 
@@ -48,7 +49,7 @@ namespace SWII6P2.Controllers
             {
                 return BadRequest(new
                 {
-                    Message = "O id não pode ser zero."
+                    message = "O id não pode ser zero."
                 });
             }
 
@@ -59,7 +60,7 @@ namespace SWII6P2.Controllers
                 {
                     return NotFound(new
                     {
-                        Message = "O usuário não foi encontrado."
+                        message = "O usuário não foi encontrado."
                     });
                 }
 
@@ -67,7 +68,7 @@ namespace SWII6P2.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Message = $"Erro inesperado. Detalhes: {ex.Message}" });
+                return StatusCode(500, new { message = $"Erro inesperado. Detalhes: {ex.Message}" });
             }
         }
 
@@ -89,7 +90,7 @@ namespace SWII6P2.Controllers
             {
                 return BadRequest(new
                 {
-                    Message = "Erro, o usuário não está devidamente completo."
+                    message = "Erro, o usuário não está devidamente completo."
                 });
             }
 
@@ -100,7 +101,7 @@ namespace SWII6P2.Controllers
                 {
                     return NotFound(new
                     {
-                        Message = "Usuário não encontrado."
+                        message = "Usuário não encontrado."
                     });
                 }
 
@@ -110,12 +111,12 @@ namespace SWII6P2.Controllers
                 _context.SaveChanges();
                 return Ok(new
                 {
-                    Message = "Usuário atualizado com sucesso."
+                    message = "Usuário atualizado com sucesso."
                 });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Message = $"Erro inesperado, detalhes: {ex.Message}" });
+                return StatusCode(500, new { message = $"Erro inesperado, detalhes: {ex.Message}" });
             }
         }
 
@@ -126,7 +127,7 @@ namespace SWII6P2.Controllers
             {
                 return BadRequest(new
                 {
-                    Message = "O id não pode ser zero."
+                    message = "O id não pode ser zero."
                 });
             }
 
@@ -137,7 +138,7 @@ namespace SWII6P2.Controllers
                 {
                     return NotFound(new
                     {
-                        Message = "O usuário não foi encontrado."
+                        message = "O usuário não foi encontrado."
                     });
                 }
 
@@ -145,31 +146,33 @@ namespace SWII6P2.Controllers
                 await _context.SaveChangesAsync();
                 return Ok(new
                 {
-                    Message = "Usuário deletado com sucesso."
+                    message = "Usuário deletado com sucesso."
                 });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Message = $"Erro inesperado, detalhes: {ex.Message}" });
+                return StatusCode(500, new { message = $"Erro inesperado, detalhes: {ex.Message}" });
             }
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult> Login(User user)
+        public async Task<ActionResult> Login([FromBody]User user)
         {
             if (user == null)
             {
                 return BadRequest(new
                 {
-                    Message = "O usuário não pode ser nulo."
+                    message = "O usuário não pode ser nulo."
                 });
             }
+
 
             if (string.IsNullOrEmpty(user.Name))
             {
                 return BadRequest(new
                 {
-                    Message = "O usuário precisa estar com o nome preenchido corretamente."
+                    message = "O usuário precisa estar com o nome preenchido corretamente."
                 });
             }
 
@@ -180,7 +183,7 @@ namespace SWII6P2.Controllers
                 {
                     return NotFound(new
                     {
-                        Message = $"O usuário {user.Name} não foi encontrado. Por favor, verifique se foi devidamente preenchido."
+                        message = $"O usuário {user.Name} não foi encontrado. Por favor, verifique se foi devidamente preenchido."
                     });
                 }
 
@@ -188,7 +191,7 @@ namespace SWII6P2.Controllers
                 {
                     return Unauthorized(new
                     {
-                        Message = $"O usuário {user.Name} está inativo. Entre em contato com o suporte."
+                        message = $"O usuário {user.Name} está inativo. Entre em contato com o suporte."
                     });
                 }
 
@@ -196,17 +199,17 @@ namespace SWII6P2.Controllers
                 {
                     return Unauthorized(new
                     {
-                        Message = $"O usuário ou a senha estão incorretos. Por favor, verifique as informações preenchidas."
+                        message = $"O usuário ou a senha estão incorretos. Por favor, verifique as informações preenchidas."
                     });
                 }
 
                 var token = TokenServices.GenerateToken(loggingUser);
 
-                return Ok(token);
+                return Ok(new { Token = token });
             }
             catch(Exception ex)
             {
-                return StatusCode(500, new { Message = $"Erro inesperado, detalhes: {ex.Message}" });
+                return StatusCode(500, new { message = $"Erro inesperado, detalhes: {ex.Message}" });
             }
         }
     }
