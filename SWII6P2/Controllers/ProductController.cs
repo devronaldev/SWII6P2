@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SWII6P2.Models;
@@ -14,8 +15,15 @@ namespace SWII6P2.Controllers
         public ProductController(ApplicationDbContext context) => _context = context;
 
         [HttpPost]
-        public async Task<dynamic> CreateProduct(Product product)
+        public async Task<dynamic> CreateProduct([FromBody]Product product, [FromHeader] string token)
         {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return BadRequest(new
+                {
+                    Message = "Houve um problema com o Token."
+                });
+            }
             if (product == null)
             {
                 return BadRequest(new
@@ -26,6 +34,17 @@ namespace SWII6P2.Controllers
 
             try
             {
+                var user = await TokenServices.GetTokenUserAsync(TokenServices.ValidateJwtToken(token), _context);
+
+                if (user == null)
+                {
+                    return Unauthorized(new
+                    {
+                        Message = "Nenhum usuário válido."
+                    });
+                }
+                product.LastUpdaterId = user.Id;
+                product.RecorderId = user.Id;
                 _context.Products.Add(product);
                 await _context.SaveChangesAsync();
 
@@ -75,13 +94,21 @@ namespace SWII6P2.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateProduct(Product product, int lastUpdaterId)
+        public async Task<IActionResult> UpdateProduct([FromHeader]Product product, [FromHeader] string token)
         {
             if (product == null)
             {
                 return BadRequest(new
                 {
                     Message = "O novo produto não pode ser nulo."
+                });
+            }
+
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest(new
+                {
+                    Message = "O token não pode estar vazio."
                 });
             }
 
@@ -95,6 +122,16 @@ namespace SWII6P2.Controllers
 
             try 
             {
+                var user = await TokenServices.GetTokenUserAsync(TokenServices.ValidateJwtToken(token), _context);
+
+                if (user == null)
+                {
+                    return Unauthorized(new
+                    {
+                        Message = "Nenhum usuário válido."
+                    });
+                }
+
                 var productToChange = await _context.Products.FirstOrDefaultAsync(p => p.Id == product.Id);
                 if (productToChange == null)
                 {
@@ -107,7 +144,7 @@ namespace SWII6P2.Controllers
                 productToChange.Price = product.Price;
                 productToChange.Name = product.Name;
                 productToChange.Status = product.Status;
-                productToChange.LastUpdaterId = lastUpdaterId;
+                productToChange.LastUpdaterId = user.Id;
 
                 await _context.SaveChangesAsync();
 
@@ -123,7 +160,7 @@ namespace SWII6P2.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteProduct(int productId)
+        public async Task<IActionResult> DeleteProduct([FromQuery] int productId, [FromHeader] string token)
         {
             if (productId == 0)
             {
@@ -135,6 +172,16 @@ namespace SWII6P2.Controllers
 
             try
             {
+                var user = await TokenServices.GetTokenUserAsync(TokenServices.ValidateJwtToken(token), _context);
+
+                if (user == null)
+                {
+                    return Unauthorized(new
+                    {
+                        Message = "Nenhum usuário válido."
+                    });
+                }
+
                 var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
                 if (product == null)
                 {

@@ -85,7 +85,7 @@ namespace SWII6P2.Controllers
                 });
             }
 
-            if (SWII6P2Verifications.Verifications.IsUserFull(user.Name, user.Password))
+            if (!SWII6P2Verifications.Verifications.IsUserFull(user.Name, user.Password))
             {
                 return BadRequest(new
                 {
@@ -96,6 +96,14 @@ namespace SWII6P2.Controllers
             try
             {
                 var userToUpdate = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
+                if (userToUpdate == null)
+                {
+                    return NotFound(new
+                    {
+                        Message = "Usuário não encontrado."
+                    });
+                }
+
                 userToUpdate.Name = user.Name;
                 userToUpdate.Status = user.Status;
                 userToUpdate.Password = user.Password;
@@ -176,7 +184,15 @@ namespace SWII6P2.Controllers
                     });
                 }
 
-                if (loggingUser.Password != user.Password)
+                if (!loggingUser.Status)
+                {
+                    return Unauthorized(new
+                    {
+                        Message = $"O usuário {user.Name} está inativo. Entre em contato com o suporte."
+                    });
+                }
+
+                if (loggingUser.Password.Trim() != user.Password.Trim())
                 {
                     return Unauthorized(new
                     {
@@ -184,7 +200,9 @@ namespace SWII6P2.Controllers
                     });
                 }
 
-                return Ok();
+                var token = TokenServices.GenerateToken(loggingUser);
+
+                return Ok(token);
             }
             catch(Exception ex)
             {
